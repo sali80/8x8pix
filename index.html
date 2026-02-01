@@ -1,1 +1,67 @@
-hello world
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>8x8 Pixel Generator</title>
+<style>
+  table { border-collapse: collapse; margin-bottom: 20px; }
+  td { border: 1px solid #ccc; width: 25px; height: 25px; text-align: center; }
+  input[type="number"] { width: 20px; text-align: center; }
+</style>
+</head>
+<body>
+
+<h2>8×8 Pixelbild erstellen</h2>
+
+<table>
+  <tbody id="grid"></tbody>
+</table>
+
+<label>Dateiname: <input id="filename" type="text" placeholder="meinbild"></label>
+<button id="saveBtn">Speichern</button>
+
+<canvas id="canvas" width="8" height="8" style="display:none;"></canvas>
+
+<script>
+// Tabelle erzeugen
+const grid = document.getElementById("grid");
+for (let y = 0; y < 8; y++) {
+  const row = document.createElement("tr");
+  for (let x = 0; x < 8; x++) {
+    const cell = document.createElement("td");
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = 0;
+    input.max = 1;
+    input.value = 0;
+    cell.appendChild(input);
+    row.appendChild(cell);
+  }
+  grid.appendChild(row);
+}
+
+document.getElementById("saveBtn").addEventListener("click", () => {
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  // Pixel setzen
+  const rows = grid.querySelectorAll("tr");
+  rows.forEach((row, y) => {
+    row.querySelectorAll("input").forEach((input, x) => {
+      const val = parseInt(input.value) === 1 ? 255 : 0;
+      ctx.fillStyle = `rgb(${val},${val},${val})`;
+      ctx.fillRect(x, y, 1, 1);
+    });
+  });
+
+  // JPG erzeugen
+  const filename = document.getElementById("filename").value || "bild";
+  const link = document.createElement("a");
+  link.download = filename + ".jpg";
+  link.href = canvas.toDataURL("image/jpeg");
+  link.click();
+});
+</script>
+
+</body>
+</html>
