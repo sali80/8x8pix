@@ -2,56 +2,48 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>8x8 Pixel Generator</title>
-<style>
-  table { border-collapse: collapse; margin-bottom: 20px; }
-  td { border: 1px solid #ccc; width: 25px; height: 25px; text-align: center; }
-  input[type="number"] { width: 20px; text-align: center; }
-</style>
+<title>8x8pix</title>
 </head>
 <body>
 
-<h2>8×8 Pixelbild erstellen</h2>
+<h3>8x8pix – JPG aus 8x8 Pixeln</h3>
 
-<table>
-  <tbody id="grid"></tbody>
-</table>
+<div id="grid"></div>
 
-<label>Dateiname: <input id="filename" type="text" placeholder="meinbild"></label>
-<button id="saveBtn">Speichern</button>
+<p>
+  Dateiname: <input id="filename" type="text" value="meinbild">
+  <button id="saveBtn">Speichern</button>
+</p>
 
 <canvas id="canvas" width="8" height="8" style="display:none;"></canvas>
 
 <script>
-// Tabelle erzeugen
+// 8x8 Checkbox-Raster erzeugen
 const grid = document.getElementById("grid");
 for (let y = 0; y < 8; y++) {
-  const row = document.createElement("tr");
+  const row = document.createElement("div");
   for (let x = 0; x < 8; x++) {
-    const cell = document.createElement("td");
-    const input = document.createElement("input");
-    input.type = "number";
-    input.min = 0;
-    input.max = 1;
-    input.value = 0;
-    cell.appendChild(input);
-    row.appendChild(cell);
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.dataset.x = x;
+    cb.dataset.y = y;
+    row.appendChild(cb);
   }
   grid.appendChild(row);
 }
 
-document.getElementById("saveBtn").addEventListener("click", () => {
+// Speichern-Button
+document.getElementById("saveBtn").onclick = () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  // Pixel setzen
-  const rows = grid.querySelectorAll("tr");
-  rows.forEach((row, y) => {
-    row.querySelectorAll("input").forEach((input, x) => {
-      const val = parseInt(input.value) === 1 ? 255 : 0;
-      ctx.fillStyle = `rgb(${val},${val},${val})`;
-      ctx.fillRect(x, y, 1, 1);
-    });
+  // Canvas füllen
+  const checkboxes = grid.querySelectorAll("input[type=checkbox]");
+  checkboxes.forEach(cb => {
+    const x = parseInt(cb.dataset.x);
+    const y = parseInt(cb.dataset.y);
+    ctx.fillStyle = cb.checked ? "white" : "black";
+    ctx.fillRect(x, y, 1, 1);
   });
 
   // JPG erzeugen
@@ -60,7 +52,7 @@ document.getElementById("saveBtn").addEventListener("click", () => {
   link.download = filename + ".jpg";
   link.href = canvas.toDataURL("image/jpeg");
   link.click();
-});
+};
 </script>
 
 </body>
